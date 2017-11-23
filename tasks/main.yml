@@ -5,6 +5,7 @@
     owner: root
     group: root
     state: directory
+  become: yes
 
 - name: Create user for each allowed Keystone user
   user:
@@ -19,10 +20,12 @@
     ssh_key_comment: "{{ item.name }}"
     groups: "{{ item.groups }}"
   with_items: "{{ os_keypair_login_users }}"
+  become: yes
 
 - name: Install os_client_config for the os_keypairs library
   pip:
     name: os_client_config
+  become: yes
 
 - name: Get ssh keys
   os_keypairs:
@@ -40,6 +43,7 @@
     mode: 0700
   when: item.user in ssh_users.authorized_keys
   with_items: "{{ os_keypair_login_users }}"
+  become: yes
 
 - name: Add authorized_keys
   blockinfile:
@@ -50,6 +54,7 @@
     mode: 0600
   when: item.user in ssh_users.authorized_keys
   with_items: "{{ os_keypair_login_users }}"
+  become: yes
 
 - name: Allow wheel group to have passwordless sudo
   lineinfile:
@@ -58,3 +63,4 @@
     regexp: '^%wheel'
     line: '%wheel ALL=(ALL) NOPASSWD: ALL'
   when: os_keypair_login_passwordless_sudo_wheel | bool
+  become: yes

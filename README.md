@@ -62,10 +62,11 @@ This example playbook combines this role and ``stackhpc.os-config``:
       roles:
         - { role: stackhpc.os-config,
             os_config_content: "{{ my_cloud_config }}" }
-        - { role: stachhpc.os-keypair-login,
+        - { role: stackhpc.os-keypair-login,
             os_keypair_login_cloud: "my_cloud_config",
             os_keypair_login_project_name: "p3",
             os_keypair_login_users: "{{ allowed_users }}" }
+
 License
 -------
 
