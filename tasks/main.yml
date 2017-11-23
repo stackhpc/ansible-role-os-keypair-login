@@ -39,6 +39,7 @@
   register: ssh_users
   environment:
     OS_CLOUD: "{{ os_keypair_login_cloud }}"
+  become: yes
 
 - name: Ensure .ssh dir exists
   file:
