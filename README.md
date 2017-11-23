@@ -1,6 +1,8 @@
 stackhpc.os-keypair-login
 =========================
 
+[![Build Status](https://travis-ci.org/stackhpc/ansible-role-os-keypair-login.svg?branch=master)](https://travis-ci.org/stackhpc/ansible-role-os-keypair-login)
+
 Add OpenStack keypairs into the ``authorized_keys`` file.
 
 Requirements
