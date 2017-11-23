@@ -1,0 +1,18 @@
+---
+# Things you should set for each enviroment:
+
+os_keypair_login_cloud: my_cloud_config
+os_keypair_login_project_name: project1
+os_keypair_login_users:
+  - name: "John Smith"
+    user: johnsmith
+    uid: 2001
+    groups: wheel
+  - name: "James Bond"
+    user: jbond7
+    uuid: 2007
+
+# Defaults you may want to change
+
+os_keypair_login_homedir: "/home/openstack"
+os_keypair_login_passwordless_sudo_wheel: "yes"

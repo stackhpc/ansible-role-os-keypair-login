@@ -1,0 +1,60 @@
+---
+- name: Ensure homedir exists
+  file:
+    dest: "{{ os_keypair_login_homedir }}"
+    owner: root
+    group: root
+    state: directory
+
+- name: Create user for each allowed Keystone user
+  user:
+    state: present
+    system: no
+    name: "{{ item.user }}"
+    uid: "{{ item.uid }}"
+    comment: "{{ item.name }}"
+    createhome: yes
+    home: "{{ os_keypair_login_homedir }}/{{ item.user }}"
+    generate_ssh_key: no
+    ssh_key_comment: "{{ item.name }}"
+    groups: "{{ item.groups }}"
+  with_items: "{{ os_keypair_login_users }}"
+
+- name: Install os_client_config for the os_keypairs library
+  pip:
+    name: os_client_config
+
+- name: Get ssh keys
+  os_keypairs:
+    project_name: "{{ os_keypair_login_project_name }}"
+  register: ssh_users
+  environment:
+    OS_CLOUD: "{{ os_keypair_login_cloud }}"
+
+- name: Ensure .ssh dir exists
+  file:
+    path: "{{ os_keypair_login_homedir }}/{{ item.user }}/.ssh"
+    state: directory
+    owner: "{{ item.user }}"
+    group: "{{ item.user }}"
+    mode: 0700
+  when: item.user in ssh_users.authorized_keys
+  with_items: "{{ os_keypair_login_users }}"
+
+- name: Add authorized_keys
+  blockinfile:
+    dest: "{{ os_keypair_login_homedir }}/{{ item.user }}/.ssh/authorized_keys"
+    block: "{{ ssh_users.authorized_keys[item.user] }}"
+    owner: "{{ item.user }}"
+    group: "{{ item.user }}"
+    mode: 0600
+  when: item.user in ssh_users.authorized_keys
+  with_items: "{{ os_keypair_login_users }}"
+
+- name: Allow wheel group to have passwordless sudo
+  lineinfile:
+    dest: /etc/sudoers
+    state: present
+    regexp: '^%wheel'
+    line: '%wheel ALL=(ALL) NOPASSWD: ALL'
+  when: os_keypair_login_passwordless_sudo_wheel | bool
