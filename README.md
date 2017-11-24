@@ -69,8 +69,6 @@ are able to login via their nova ssh key, if they have one:
 
 An easy way to this example is:
 
-.. code-block::
-
     sudo yum install python-virtualenv libselinux-python
 
     virtualenv .venv --system-site-packages
